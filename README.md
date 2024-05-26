@@ -40,7 +40,7 @@ The data used in this project is sourced from Twitter. You can find the original
 ## Contents of the Repository
 - *README.md:* This is the introductory and explanatory document for this repository.
 - *SQL Queries:* Contains SQL queries used for data extraction, transformation, and analysis.
-- *Power BI Visualizations:* Includes interactive visualizations created using Power BI for data exploration and insights.
+- *Power BI Visualizations:* Includes interactive visualizations created using Power BI for data exploration and insights.![Viz_Image](Image_Viz/SHG_Viz.png)
 - *Documentation:* Provides comprehensive documentation detailing data sources, methodologies, actionable insights, and key findings.
 - *Reports:* Includes a detailed report summarizing the analysis, insights, and recommendations derived from the data.
 
