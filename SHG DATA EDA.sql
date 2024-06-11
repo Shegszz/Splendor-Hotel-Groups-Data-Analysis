@@ -39,7 +39,7 @@ SELECT COUNT([Booking ID]) AS [Total Bookings]
 FROM TwitterData..Data$
 
 ---Total Bookings for each Month
-SELECT DATENAME(M, BookingDateConverted) AS [Booking Year], COUNT([Booking ID]) AS [Total Bookings]
+SELECT DATENAME(M, BookingDateConverted) AS [Booking Month], COUNT([Booking ID]) AS [Total Bookings]
 FROM TwitterData..Data$
 GROUP BY DATENAME(M, BookingDateConverted)
 ORDER BY [Total Bookings] DESC;
@@ -49,7 +49,7 @@ SELECT YEAR(BookingDateConverted) AS [Booking Year], DATENAME(M, BookingDateConv
 SUM(COUNT([Booking ID])) OVER (PARTITION BY YEAR(BookingDateConverted) ORDER BY YEAR(BookingDateConverted), DATENAME(M, BookingDateConverted)) AS [Rolling Total Bookings]
 FROM TwitterData..Data$
 GROUP BY YEAR(BookingDateConverted), DATENAME(M, BookingDateConverted)
-ORDER BY [Booking Year], [Booking Month];
+ORDERÂ BYÂ [Booking Year],Â [Booking Month];
 
 ---SUCCESSFUL BOOKINGS FOR EACH YEAR AND MONTH RESPECTIVELY:
 --Successful Bookings Trend Over Time with Rolling Count
@@ -58,7 +58,7 @@ SUM(COUNT([Booking ID])) OVER (PARTITION BY  YEAR(BookingDateConverted) ORDER BY
 FROM TwitterData..Data$
 WHERE [Cancelled (0/1)] = 0
 GROUP BY YEAR(BookingDateConverted), DATENAME(M, BookingDateConverted)
-ORDER BY [Booking Year], [Booking Month];
+ORDERÂ BYÂ [Booking Year],Â [Booking Month];
 
 --Successful Bookings for each Month
 SELECT DATENAME(M, BookingDateConverted) AS [Booking Month], COUNT([Booking ID]) AS [Successful Bookings]
@@ -251,7 +251,7 @@ SELECT YEAR(BookingDateConverted) AS [Booking Year], DATENAME(M, BookingDateConv
        SUM(CASE WHEN [Distribution Channel] = 'Offline Travel Agent' THEN Revenue ELSE 0 END) AS [Offline Revenue($)]
 FROM TwitterData..Data$
 GROUP BY YEAR(BookingDateConverted), DATENAME(M, BookingDateConverted)
-ORDER BY [Booking Year], [Booking Month];
+ORDERÂ BY [Booking Year],Â [Booking Month];
 
 ---Revenue contribution and cancellation rates comparison
 SELECT [Distribution Channel], SUM(Revenue) AS [Total Revenue($)], ROUND(AVG([Cancelled (0/1)]), 2) AS [Avg Cancellation Rate]
