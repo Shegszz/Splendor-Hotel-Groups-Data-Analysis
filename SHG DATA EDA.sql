@@ -44,6 +44,12 @@ FROM TwitterData..Data$
 GROUP BY DATENAME(M, BookingDateConverted)
 ORDER BY [Total Bookings] DESC;
 
+---Total Bookings for each Year
+SELECT Year(BookingDateConverted) AS [Booking Year], COUNT([Booking ID]) AS [Total Bookings]
+FROM TwitterData..Data$
+GROUP BY Year(BookingDateConverted)
+ORDER BY [Total Bookings] DESC;
+
 ---Booking trend over time with Rolling Count
 SELECT YEAR(BookingDateConverted) AS [Booking Year], DATENAME(M, BookingDateConverted) AS [Booking Month], COUNT([Booking ID]) AS [Bookings Count],
 SUM(COUNT([Booking ID])) OVER (PARTITION BY YEAR(BookingDateConverted) ORDER BY YEAR(BookingDateConverted), DATENAME(M, BookingDateConverted)) AS [Rolling Total Bookings]
@@ -68,7 +74,8 @@ GROUP BY DATENAME(M, BookingDateConverted)
 ORDER BY [Successful Bookings] DESC;
 
 ---Total Bookings across Distribution Channel
-SELECT [Distribution Channel] , COUNT([Booking ID]) AS [Total Bookings]
+SELECT [Distribution Channel] , COUNT([Booking ID]) AS [Total Bookings],ROUND((SUM([Booking ID]) / (SELECT SUM([Booking ID])
+FROM TwitterData..Data$)), 3) * 100 AS  [Booking Percentage(%)]
 FROM TwitterData..Data$
 GROUP BY [Distribution Channel]
 ORDER BY [Total Bookings] DESC;
@@ -87,13 +94,13 @@ GROUP BY YEAR(BookingDateConverted)
 ORDER BY [Cancelled Bookings] DESC;
 
 ---Average Lead Time across Distribution Channels
-SELECT [Distribution Channel], ROUND(AVG([Lead Time]), 2) AS [Avg Lead Time]
+SELECT [Distribution Channel], ROUND(AVG([Lead Time]), 1) AS [Avg Lead Time]
 FROM TwitterData..Data$
 GROUP BY [Distribution Channel]
 ORDER BY [Avg Lead Time] DESC;
 
 ---Average Lead Time across Customer Type
-SELECT [Customer Type], ROUND(AVG([Lead Time]), 2) AS [Avg Lead Time]
+SELECT [Customer Type], ROUND(AVG([Lead Time]), 0) AS [Avg Lead Time]
 FROM TwitterData..Data$
 GROUP BY [Customer Type]
 ORDER BY [Avg Lead Time] DESC;
@@ -117,11 +124,13 @@ ORDER BY [Total Revenue($)] DESC;
 ----CANCELLATION ANALYSIS
 
 ---Factors correlated with cancellations and prediction based on variables
-SELECT Status, [Customer Type],
- AVG([Revenue Loss]) AS [Avg Revenue loss($)]
+SELECT [Customer Type],
+ ROUND(SUM([Revenue Loss]), 0) AS [Revenue loss($)]
 FROM TwitterData..Data$
 WHERE [Cancelled (0/1)] = 1
-GROUP BY Status, [Customer Type]
+GROUP BY [Customer Type]
+ORDER BY [Revenue loss($)]
+
 
 ---Revenue loss comparison across customer segments and channels
 SELECT [Customer Type], [Distribution Channel], SUM([Revenue Loss]) AS [Total Revenue Loss($)]
@@ -220,19 +229,14 @@ GROUP BY [Status];
 
 
 ----IMPACTS OF DEPOSIT TYPES
-
 ---On Cancellation and Revenue
 SELECT [Deposit Type], COUNT([Cancelled (0/1)]) AS [Cancelled Bookings], AVG([Revenue]) AS [Average Revenue($)],
-	(CASE WHEN [Deposit Type] IN ('Non Refundable','Refundable' )THEN 'With Deposits' ELSE 'Without Deposits' END) AS [Deposit-Type]
+	(CASE WHEN [Deposit Type] IN ('Non Refundable','Refundable' )THEN 'With Deposits' ELSE 'Without Deposits' END) AS [Deposit-Type], (SUM([Cancelled (0/1)]) / (SELECT SUM([Cancelled (0/1)])
+FROM TwitterData..Data$)) * 100 AS  [Cancellation Rate(%)]
 FROM TwitterData..Data$
 WHERE [Cancelled (0/1)] = 1 
 GROUP BY [Deposit Type]
 ORDER BY [Cancelled Bookings] DESC;
-
----Patterns in deposit types across customer segments
-SELECT [Customer Type], [Deposit Type], COUNT([Booking ID]) AS [Bookings Count]
-FROM TwitterData..Data$
-GROUP BY [Customer Type], [Deposit Type];
 
 
 ----TIME-TO-EVENT ANALYSIS
